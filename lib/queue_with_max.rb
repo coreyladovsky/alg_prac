@@ -9,48 +9,62 @@
 require_relative 'ring_buffer'
 
 class QueueWithMax < RingBuffer
-  attr_accessor :store, :max
+  attr_accessor :store
 
   def initialize
     super
-    @store = RingBuffer.new
     @length = 0
     @max = nil
+    @in_stack = []
+    @out_stack = []
   end
 
   def enqueue(val)
-    if @max.nil? || @max < val
-      @max = val
+    if @in_stack.length == 0
+      @in_stack << [val, val]
+    else
+      @in_stack << [ val, [@in_stack.last[1], val].max ]
     end
-    @store.push(@max)
     @length += 1
   end
 
   def dequeue
-    @length -= 1
-    final = @store.shift
-    if final == @max
-      recalc_max!
+    if @out_stack.empty?
+      switch_stack
     end
-    final
+    @out_stack.pop[0]
+    @length -= 1
   end
 
-  def recalc_max!
-    max = nil
-    idx = 0
-    while idx < @length
-      if  max.nil? || @store[idx] > max
-        max = @store[idx]
-      end
-      idx += 1
+  def max
+    if !@in_stack.empty? && !@out_stack.empty?
+      [@in_stack.last.last, @out_stack.last.last].max
+    elsif  @in_stack.empty? && @out_stack.empty?
+      return nil
+    elsif  @in_stack.empty?
+      @out_stack.last.last
+    else
+      @in_stack.last.last
     end
-
-    @max = max
   end
 
 
   def length
     @length
+  end
+
+  protected
+
+  def switch_stack
+    until @in_stack.empty?
+      if @out_stack.empty?
+        last = @in_stack.pop[0]
+        @out_stack << [last, last]
+      else
+        last = @in_stack.pop[0]
+        @out_stack << [ last, [last, @out_stack.last.last].max ]
+      end
+    end
   end
 
 end
