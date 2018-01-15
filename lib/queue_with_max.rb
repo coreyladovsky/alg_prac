@@ -12,18 +12,31 @@ class QueueWithMax
   attr_accessor :store
 
   def initialize
+    @store =[]
+    @length = 0
   end
 
   def enqueue(val)
+    @length += 1
+    # if @max.nil? || @max < val
+    #   @max = val
+    # end
+    @store.push(val)
   end
 
   def dequeue
+    @length -= 1
+    final = @store.shift
+    # @max = @store.last[0]
+    # final.first
   end
 
   def max
+    @store.max
   end
 
   def length
+    @length
   end
 
 end
