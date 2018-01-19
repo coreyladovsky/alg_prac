@@ -1,11 +1,35 @@
-# There are many ways to implement these methods, feel free to add arguments 
+# There are many ways to implement these methods, feel free to add arguments
 # to methods as you see fit, or to create helper methods.
 
+require("bst_node")
+
 class BinarySearchTree
+  attr_reader :root
   def initialize
+    @root = nil
   end
 
-  def insert(value)
+  def insert(value, node = @root)
+    if node.nil?
+      @root = BSTNode.new(value)
+      return
+    else
+      if node.value > value
+        if node.left
+          insert(value, node.left)
+        else
+          node.left = BSTNode.new(value)
+        end
+      else
+        if node.value < value
+          if node.right
+            insert(value, node.right)
+          else
+            node.right = BSTNode.new(value)
+          end
+        end
+      end
+    end
   end
 
   def find(value, tree_node = @root)
@@ -19,7 +43,7 @@ class BinarySearchTree
   end
 
   def depth(tree_node = @root)
-  end 
+  end
 
   def is_balanced?(tree_node = @root)
   end
@@ -30,5 +54,9 @@ class BinarySearchTree
 
   private
   # optional helper methods go here:
+
+  def child_insert(node, value)
+
+  end
 
 end
