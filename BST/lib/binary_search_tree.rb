@@ -33,9 +33,21 @@ class BinarySearchTree
   end
 
   def find(value, tree_node = @root)
+    return nil if tree_node.nil?
+    return tree_node if tree_node.value == value
+    if tree_node.value < value
+      find(value, tree_node.right)
+    else
+      find(value, tree_node.left)
+    end
   end
 
   def delete(value)
+    node = self.find(value)
+    if node.left.nil? && node.right.nil?
+      insert(nil, node)
+    end
+    node
   end
 
   # helper method for #delete:
