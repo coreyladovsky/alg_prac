@@ -43,21 +43,56 @@ class BinarySearchTree
   end
 
   def delete(value)
-    node = self.find(value)
+    node = find(value)
     if node.left.nil? && node.right.nil?
-      insert(nil, node)
+      return @root = nil if @root == node
+      parent_node = find_parent(@root, node)
+      parent_node.left == value ? parent_node.left = nil : parent_node.right = nil
+
+    elsif node.left && !node.right || !node.left && node.right
+      parent_node = find_parent(@root, node)
+      single_child_promotion(parent_node, node, value)
+
+    elsif node.left && node.right
+      parent_node = find_parent(@root, node)
+      max_decendent = maximum(node.left)
+      max_parent = find_parent(@root, max_decendent)
+      if parent_node.left == node
+        parent_node.left = max_decendent
+      else
+        parent_node.right = max_decendent
+      end
+      if max_decendent.left
+        max_parent.right = max_decendent.left
+      end
     end
-    node
+
+
   end
 
   # helper method for #delete:
   def maximum(tree_node = @root)
+    tree_node.right ? maximum(tree_node.right) : tree_node
   end
 
   def depth(tree_node = @root)
+    return 0 if tree_node.left.nil? && tree_node.right.nil?
+    if tree_node.left
+      left_sum = 1 + depth(tree_node.left)
+    else
+      left_sum = 0
+    end
+    if tree_node.right
+      right_sum = 1 + depth(tree_node.right)
+    else
+      right_sum = 0
+    end
+
+    [left_sum, right_sum].max
   end
 
   def is_balanced?(tree_node = @root)
+    
   end
 
   def in_order_traversal(tree_node = @root, arr = [])
@@ -66,6 +101,31 @@ class BinarySearchTree
 
   private
   # optional helper methods go here:
+
+  def single_child_promotion(parent_node, node, value)
+    if parent_node.left == value
+      if node.left
+        parent_node.left = node.left
+      else
+        parent_node.left = node.right
+      end
+    else
+      if node.left
+        parent_node.right = node.left
+      else
+        parent_node.right = node.right
+      end
+    end
+  end
+
+  def find_parent(parent, node)
+    if (parent.right == node || parent.left == node)
+      return parent
+    else
+      find_parent(parent.left, node) || find_parent(parent.right, node)
+    end
+  end
+
 
   def child_insert(node, value)
 
