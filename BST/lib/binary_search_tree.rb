@@ -107,24 +107,12 @@ class BinarySearchTree
   end
 
   def in_order_traversal(tree_node = @root, arr = [])
-    if tree_node.left.nil? && tree_node.right.nil?
-      return arr.push(tree_node.value)
+    return arr if tree_node.nil?
+    if tree_node
+      left = in_order_traversal(tree_node.left)
+      right = in_order_traversal(tree_node.right)
+      left.concat([tree_node.value]).concat(right)
     end
-
-    if tree_node.left
-      left = in_order_traversal(tree_node.left, arr)
-      arr.concat(left)
-    # else
-    #   left = []
-    end
-    if tree_node.right
-      right = in_order_traversal(tree_node.right, arr)
-      arr.concat(right)
-    # else
-      # right = []
-    end
-
-    return arr
   end
 
 
