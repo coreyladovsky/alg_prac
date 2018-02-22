@@ -4,6 +4,8 @@ class BinaryMinHeap
   attr_reader :store, :prc
 
   def initialize(&prc)
+    prc ||= Proc.new { |el1, el2| el1 <=> el2 }
+    @prc = prc
     @store = []
   end
 
@@ -22,10 +24,7 @@ class BinaryMinHeap
 
   def push(val)
     @store << val
-    # parent = @store[count / 2]
-    # while parent < val
-    #
-    # end
+
   end
 
   public
@@ -46,24 +45,14 @@ class BinaryMinHeap
   end
 
   def self.heapify_down(array, parent_idx, len = array.length, &prc)
-    continue = true
-    while continue
-      child1, child2 = BinaryMinHeap.child_indices(len, parent_idx)
-      break if !child1 && !child2
-
-      if array[parent_idx] > array[child1] || (!!array[child2] && array[parent_idx] > array[child2])
-        if child1 && child2
-          child_idx = array[child1] < array[child2] ? child1 : child2
-        else
-          child_idx = child1
-        end
-        array[parent_idx], array[child_idx] = array[child_idx], array[parent_idx]
-        parent_idx = child_idx
-      else
-        continue = false
-      end
-    end
-    array
+    prc ||= Proc.new { |el1, el2| el1 <=> el2 }
+    children = self.child_indices(len, parent_idx)
+    return array if children.all? { |child| prc.call(array[parent_idx], child) != 1 }
+    child1, child2 = children
+    child_idx = child2 && prc.call(array[child2], array[child1]) == -1 ? child2 : child1
+    array[parent_idx], array[child_idx] = array[child_idx], array[parent_idx]
+    parent_idx = child_idx
+    self.heapify_down(array, parent_idx, len, &prc)
   end
 
   def self.heapify_up(array, child_idx, len = array.length, &prc)
