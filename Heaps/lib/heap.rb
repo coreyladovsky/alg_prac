@@ -24,6 +24,7 @@ class BinaryMinHeap
 
   def push(val)
     @store << val
+    BinaryMinHeap.heapify_up(@store, @store.length - 1)
 
   end
 
@@ -57,11 +58,11 @@ class BinaryMinHeap
 
   def self.heapify_up(array, child_idx, len = array.length, &prc)
     prc ||= Proc.new { |el1, el2| el1 <=> el2 }
+    return array if child_idx <= 0
     parent_idx = self.parent_index(child_idx)
     return array if prc.call(array[parent_idx], array[child_idx]) != 1
     array[parent_idx], array[child_idx] = array[child_idx], array[parent_idx]
     child_idx = parent_idx
-    return array if child_idx <= 0
     self.heapify_up(array, child_idx, len, &prc)
   end
 end
