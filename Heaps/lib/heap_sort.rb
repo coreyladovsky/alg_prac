@@ -9,6 +9,7 @@ class Array
       idx += 1
     end
 
+    idx -= 1 
     while idx >= 0
       self[0], self[idx] = self[idx], self[0]
       BinaryMinHeap.heapify_down(self, 0, idx, &prc)
